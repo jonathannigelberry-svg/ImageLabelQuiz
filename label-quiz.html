@@ -1,0 +1,153 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Image Label Quiz — Wikipedia pool</title>
+<style>
+:root{--bg:#0b0c10;--card:#11151a;--ink:#e6eef7;--muted:#9fb0c3;--accent:#3aa6ff;--bad:#ff5a5f;--good:#00c853}
+html,body{height:100%}body{margin:0;background:#0b0c10;color:var(--ink);font:16px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial}
+.wrap{max-width:960px;margin:auto;padding:16px 16px 40px}
+header{display:flex;gap:10px;align-items:center;justify-content:space-between}
+h1{font-size:18px;margin:0}
+.stats{display:flex;gap:14px;font-size:14px;color:var(--muted)}.stats b{color:var(--ink)}
+.board{margin-top:12px;background:var(--card);border:1px solid #1e2630;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px #0006}
+.imgbox{aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;background:#0a0f14}
+.imgbox img{max-width:100%;max-height:100%;display:block}
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:14px}
+.choices button{border:1px solid #223042;background:#131a22;color:var(--ink);padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:600}
+.choices button:hover{border-color:#2c3e52}.choices button[disabled]{opacity:.7;cursor:default}
+.choices .ok{outline:2px solid var(--good)}.choices .no{outline:2px solid var(--bad)}
+.bar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid #1e2630;background:#0f141a}
+.left{display:flex;gap:12px;align-items:center}.btn{border:1px solid #284057;background:#13202c;color:#cfe6ff;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);border-color:#2b8bd9;color:#021018}.btn.small{font-size:12px;padding:6px 8px}.btn:disabled{opacity:.6;cursor:default}
+.hint{font-size:14px}.hint.good{color:var(--good)}.hint.bad{color:var(--bad)}
+@media (max-width:700px){.choices{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Image Label Quiz</h1>
+    <div class="stats" aria-live="polite">
+      <div>Score: <b id="score">0</b></div>
+      <div>Correct: <b id="correct">0</b></div>
+      <div>Attempts: <b id="tries">0</b></div>
+      <div>Accuracy: <b id="acc">0%</b></div>
+    </div>
+  </header>
+
+  <div class="board" role="group" aria-label="quiz board">
+    <div class="imgbox"><img id="pic" alt="quiz image"></div>
+    <div class="choices" id="choices"></div>
+    <div class="bar">
+      <div class="left">
+        <button id="reset" class="btn small" title="Reset score and progress">Reset</button>
+        <span id="feedback" class="hint" aria-live="polite"></span>
+      </div>
+      <div><button id="next" class="btn primary">Next image</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const POOL=[ "Cat","Dog","Horse","Cow","Sheep","Goat","Pig","Chicken","Duck","Goose","Swan","Red fox","Grey wolf","Brown bear","Polar bear","Giant panda","Koala","Kangaroo","Hippopotamus","Giraffe","Elephant","Cheetah","Leopard","Tiger","Lion","Zebra","Rhinoceros","Hedgehog","Rabbit","Squirrel","Otter","Badger","Skunk","Raccoon","Chimpanzee","Gorilla","Orangutan","Dolphin","Whale","Octopus","Shark","Sea turtle","Penguin","Seal","Walrus","Goldfish","Carp","Salmon","Trout","House sparrow","Robin (bird)","Blackbird","Blue tit","Barn owl","Bald eagle","Peacock","Flamingo","Spoonbill","Stork","Pelican","Kingfisher","Puffin","Parrot","Sparrowhawk","Apple","Banana","Orange (fruit)","Strawberry","Blueberry","Raspberry","Blackberry","Pear","Peach","Grapes","Pineapple","Watermelon","Lemon","Lime (fruit)","Mango","Kiwi","Tomato","Cucumber","Carrot","Broccoli","Cauliflower","Cabbage","Spinach","Lettuce","Onion","Garlic","Potato","Sweet potato","Aubergine","Courgette","Pea","Maize","Wheat","Rice","Oats","Bread","Cheese","Milk","Egg","Butter","Yogurt","Chocolate","Ice cream","Pizza","Hamburger","Sandwich","Pasta","Spaghetti","Sushi","Curry","Falafel","Hummus","Taco","Burrito","Cake","Cookie","Doughnut","Croissant","Pancake","Porridge","Football (ball)","Rugby ball","Tennis ball","Cricket bat","Hockey stick","Table tennis racket","Badminton racket","Golf club","Boxing glove","Skateboard","Bicycle","Mountain bike","Road bicycle","Scooter","Motorcycle","Car","Bus","Coach (bus)","Lorry","Tractor","Ambulance","Fire engine","Police car","Taxi","Train","Steam locomotive","Diesel locomotive","Tram","Underground train","Airplane","Helicopter","Sailboat","Yacht","Submarine","Rocket","Satellite","Hammer","Screwdriver","Wrench","Spanner","Pliers","Hand saw","Hacksaw","Drill","Mallet","Chisel","Tape measure","Level (instrument)","Spirit level","Clamp (tool)","Vice (tool)","Allen key","Utility knife","Box cutter","Paintbrush","Roller (painting)","Broom","Mop","Bucket","Ladder","Wheelbarrow","Shovel","Spade","Rake","Hoe","Garden fork","Chainsaw","Axe","Pickaxe","Smartphone","Mobile phone","Laptop","Desktop computer","Monitor","Keyboard","Mouse","Printer","Camera","Camcorder","Microphone","Headphones","Headset","Smartwatch","Tablet computer","Game controller","Television","Remote control","Violin","Viola","Cello","Double bass","Guitar","Acoustic guitar","Electric guitar","Bass guitar","Ukulele","Piano","Grand piano","Keyboard instrument","Trumpet","Trombone","Tuba","French horn","Saxophone","Clarinet","Flute","Oboe","Bassoon","Drum kit","Snare drum","Cymbal","Xylophone","Harp","Bagpipes","Chair","Table","Sofa","Armchair","Bed","Wardrobe","Cupboard","Bookshelf","Stool","Lamp","Ceiling fan","Light bulb","Mirror","Clock","Toaster","Kettle","Microwave oven","Oven","Refrigerator","Washing machine","Vacuum cleaner","Iron (appliance)","Hair dryer","Football goal","Cricket stumps","Basketball hoop","Athletics track","Swimming pool","Climbing wall","Ski (sport)","Snowboard","Surfboard","Windsurfing","Kayak","Canoe","Rowing boat","Eiffel Tower","Big Ben","Tower Bridge","Stonehenge","Buckingham Palace","Palace of Westminster","London Eye","St Paul's Cathedral","Edinburgh Castle","Hadrian's Wall","Windsor Castle","Clifton Suspension Bridge","Angel of the North","The Shard","Sydney Opera House","Statue of Liberty","Golden Gate Bridge","Colosseum","Great Pyramid of Giza","Taj Mahal","Machu Picchu","Christ the Redeemer","Mount Fuji","Grand Canyon","Uluru","Niagara Falls","Acropolis of Athens","Brandenburg Gate","Sagrada Família","Petra","Mount Everest","School","Hospital","Library","Post office","Police station","Fire station","Church","Cathedral","Mosque","Temple","Windmill","Lighthouse","Bridge","Dam","Castle","Fortress","Cottage","Terraced house","Skyscraper","Warehouse","Factory","Farm","Coffee cup","Tea cup","Mug","Wine glass","Champagne flute","Beer bottle","Water bottle","Thermos","Plate","Bowl","Spoon","Fork","Knife","Chopsticks","Saucepan","Frying pan","Colander","Grater","Whisk","Spatula","Rolling pin","Corkscrew","Can opener","Backpack","Suitcase","Umbrella","Wallet","Purse","Watch","Sunglasses","Hat","Helmet","Gloves","Scarf","Belt","Shoes","Boots","Trainers","Book","Newspaper","Magazine","Notebook","Pencil","Pen","Marker","Highlighter","Eraser","Ruler","Compass (drawing tool)","Calculator","Scissors","Glue","Stapler","Paper clip","Sticky notes","Traffic light","Road sign","Roundabout","Pedestrian crossing","Zebra crossing","Speed camera","Bollard","Park bench","Bus stop","Parking meter","Post box","Grit bin" ];
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pickN(arr,n,except=null){const idx=[...arr.keys()].filter(i=>arr[i]!==except);shuffle(idx);return idx.slice(0,n).map(i=>arr[i])}
+
+// --- Strict text cleaning: remove all HTML, then trim extras
+function cleanTitle(s){
+  const str=String(s).replace(/<[^>]*>/g,'');        // strip tags
+  return str.replace(/\s*\([^)]*\)/g,'')             // drop parentheses disambiguators
+            .replace(/,.*/,'')                       // drop trailing comma phrases
+            .trim();
+}
+
+const pic=document.getElementById('pic');
+const choicesEl=document.getElementById('choices');
+const feedback=document.getElementById('feedback');
+const nextBtn=document.getElementById('next');
+const resetBtn=document.getElementById('reset');
+const scoreEl=document.getElementById('score');
+const triesEl=document.getElementById('tries');
+const correctEl=document.getElementById('correct');
+const accEl=document.getElementById('acc');
+
+let score=0, tries=0, correct=0, locked=false, truthLabel=null;
+
+// Wikipedia REST Summary -> thumbnail URL + clean title
+async function getThumbForTitle(title){
+  const url=`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+  const r=await fetch(url,{headers:{'accept':'application/json'}});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const j=await r.json();
+  const src=j.thumbnail?.source||j.originalimage?.source; if(!src) throw new Error('no image');
+  const rawTitle=j.titles?.display||title;
+  // Force DOM decode then clean
+  const div=document.createElement('div'); div.innerHTML=rawTitle;
+  const display=cleanTitle(div.textContent||div.innerText||title);
+  return {src,display};
+}
+
+function updateHUD(){
+  scoreEl.textContent=score; triesEl.textContent=tries; correctEl.textContent=correct;
+  accEl.textContent= tries? Math.round((correct/tries)*100)+'%':'0%';
+}
+
+function freezeChoices(disabled=true){
+  [...choicesEl.querySelectorAll('button')].forEach(b=>b.disabled=disabled);
+}
+
+async function nextRound(retries=6){
+  locked=false; feedback.textContent=''; feedback.className='hint'; nextBtn.disabled=true; freezeChoices(true);
+  choicesEl.innerHTML='<button class="btn" disabled>Loading…</button><button class="btn" disabled>Loading…</button><button class="btn" disabled>Loading…</button>';
+  pic.removeAttribute('src'); pic.alt='loading image';
+
+  const labels = pickN(POOL,3);
+  const correctLabel = labels[0];
+  const decoysRaw = labels.slice(1);
+
+  try{
+    const {src,display} = await getThumbForTitle(correctLabel);
+    truthLabel = cleanTitle(display);
+    const decoys = decoysRaw.map(cleanTitle);
+    const options = shuffle([truthLabel, ...decoys]);
+
+    pic.src = src; pic.alt = 'Guess the label';
+    choicesEl.innerHTML='';
+    options.forEach(text=>{
+      const btn=document.createElement('button');
+      btn.textContent=text;
+      btn.addEventListener('click',()=>choose(text,truthLabel,btn));
+      choicesEl.appendChild(btn);
+    });
+    freezeChoices(false);
+  }catch(e){
+    if(retries>0) return nextRound(retries-1);
+    feedback.textContent='Load error. Check connection.'; feedback.classList.add('bad');
+    choicesEl.innerHTML='';
+    nextBtn.disabled=false;
+  }
+}
+
+function choose(pick, truth, btn){
+  if(locked) return; locked=true;
+  const buttons=[...choicesEl.querySelectorAll('button')];
+  const correctBtn=buttons.find(b=>cleanTitle(b.textContent)===cleanTitle(truth));
+
+  tries+=1;
+  if(cleanTitle(pick)===cleanTitle(truth)){
+    score+=1; correct+=1; btn.classList.add('ok'); feedback.textContent='Correct'; feedback.classList.add('good');
+  }else{
+    score-=1; btn.classList.add('no'); if(correctBtn) correctBtn.classList.add('ok');
+    feedback.textContent='Incorrect — answer: '+cleanTitle(truth); feedback.classList.add('bad');
+  }
+  updateHUD(); freezeChoices(true); nextBtn.disabled=false;
+}
+
+nextBtn.addEventListener('click',()=>nextRound());
+resetBtn.addEventListener('click',()=>{
+  if(!confirm('Reset score and accuracy?')) return;
+  score=0; tries=0; correct=0; updateHUD(); nextRound();
+});
+
+// Init
+updateHUD(); nextRound();
+</script>
+</body></html>
